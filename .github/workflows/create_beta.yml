@@ -10,7 +10,7 @@ jobs:
     permissions:
       contents: write # for creating release
     name: Build packages
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     steps:
       - name: Clone repository
         uses: actions/checkout@v4
@@ -72,18 +72,11 @@ jobs:
           cd - > /dev/null
           mv ${{ env.UBLOCK_REPO_DIR }}/dist/build/${{ env.TAGNAME }}.safari.mv3.zip \
              ${{ env.UBLOCK_REPO_DIR }}/dist/build/uBOLite.beta.safari.zip
-      - name: Safari Web Extension Converter
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          UBOL_REPO_DIR=$(pwd)
-          unzip ${{ env.UBLOCK_REPO_DIR }}/dist/build/uBOLite.beta.safari.zip \
-             -qd ${{ env.UBLOCK_REPO_DIR }}/dist/build/safari-web-extension-converter/
-          safari-web-extension-converter --copy-resources --no-open --no-prompt --force \
-             ${{ env.UBLOCK_REPO_DIR }}/dist/build/safari-web-extension-converter/
-          rm -rf ${{ env.UBLOCK_REPO_DIR }}/dist/build/uBOLite.beta.safari.zip
-          zip ${{ env.UBLOCK_REPO_DIR }}/dist/build/uBOLite.beta.safari.zip -qr \
-             ${{ env.UBLOCK_REPO_DIR }}/dist/build/safari-web-extension-converter/*
+      - name: Upload
+        uses: actions/upload-artifact@v4.0.0
+        with:
+          name: uBOL
+          path: ./
       - name: Create GitHub beta release
         id: create_beta_release
         uses: softprops/action-gh-release@v2
